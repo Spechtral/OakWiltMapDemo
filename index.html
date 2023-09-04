@@ -1,0 +1,82 @@
+l<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oak Wilt</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="input-wrapper">
+        <form id="input-form">
+            <input type="text" name="address" id="address" placeholder="Address">
+            <input id="address-btn" type="submit" value="Search">
+        </form>
+    </div>
+    <div id="map"></div>
+    <script>
+        function initMap() {
+            var southWest = new google.maps.LatLng(30.1868, -97.8385);
+            var northEast = new google.maps.LatLng(30.2070, -97.7994);
+            var bounds = new google.maps.LatLngBounds(southWest, northEast);
+            var options = {
+                zoom: 18,
+                center: { lat: 30.199895711500943, lng: -97.82065801682384 },
+                gestureHandling: "auto",
+                zoomControl: true,
+                mapTypeId: google.maps.MapTypeId.SATELLITE,
+                minZoom: 15,
+                maxZoom: 20,
+                restriction: {
+                    latLngBounds: bounds,
+                    strictBounds: true
+                }
+            };
+            var map = new google.maps.Map(document.getElementById('map'), options);
+
+            // Load oakwilt.geojson data
+            var oakWiltLayer = new google.maps.Data();
+            oakWiltLayer.loadGeoJson("oakwilt.geojson");
+            oakWiltLayer.setStyle({
+                fillColor: 'red',
+                fillOpacity: 0.3,
+                strokeColor: 'red',
+                strokeWeight: 1
+            });
+            oakWiltLayer.setMap(map);
+
+// Load parcels.geojson data
+var parcelsLayer = new google.maps.Data();
+parcelsLayer.loadGeoJson("parcels.geojson");
+parcelsLayer.setStyle(function(feature) {
+    var layerType = feature.getProperty('layer');
+    var style = {};
+    if (layerType === 'parcels') {
+        style.fillColor = 'none';
+        style.strokeColor = 'black';
+        style.strokeWeight = 0.5;
+    } else if (layerType === 'oakwilt') {
+        style.fillColor = 'red';
+        style.fillOpacity = 0.3;
+        style.strokeColor = 'red';
+        style.strokeWeight = 1;
+    }
+    return style;
+});
+parcelsLayer.setMap(map);
+        }
+
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUDv3A7ym8QZstXg1x6eqcUPRDUh8GWlY&callback=initMap"></script>
+</body>
+</html>
